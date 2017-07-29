@@ -9,12 +9,14 @@ public class Tags {
 	public static string HIGH_SCORE_TEXT = "High Score";
 	public static string LIVES_TEXT = "Lives";
 	public static string POWER_TEXT = "Power";
+	public static string POINTS_TEXT = "Points";
 	public static string GAMEPLAY_SCENE = "Gameplay";
 	public static string MAINMENU_SCENE = "Main Menu";
 	public static string STARTGAME_SCENE = "Start Game Scene";
 	public static string PIPE_GENERAATOR = "Pipe Generator";
 	public static string SCORE_TEXT2 = "ScoreText";
 	public static string HIGH_SCORE_TEXT2 = "HighScoreText";
+	public static string POINTS_TEXT2 = "PointsText2";
 	public static string STAR_TAG = "Star";
 	public static string PIPE_TAG = "Pipe";
 	public static string BAR_TAG = "Bar";

@@ -15,8 +15,8 @@ public class PipeGenerator : MonoBehaviour {
 	[SerializeField]
 	public Transform pipeParentUp;//, pipeParentDown;
 
-	[SerializeField]
-	private float distance_between_pipes = 15f;
+	//[SerializeField]
+	//private float distance_between_pipes = 15f;
 
 	[SerializeField]
 	private float chanceForEnemyExistence = 0.1f;
@@ -37,10 +37,13 @@ public class PipeGenerator : MonoBehaviour {
 
 	public float timer;
 
+	[SerializeField]
+	private float minY = -2.73f, maxY = 6f;
+
 
 	// Use this for initialization
 	void Start () {
-		CreateUpPipes ();
+		//CreateUpPipes ();
 		//CreateDownPipes ();
 		MakeSingleton();
 
@@ -53,7 +56,7 @@ public class PipeGenerator : MonoBehaviour {
 		}
 	}
 
-	void CreateUpPipes () {
+	/*void CreateUpPipes () {
 		pipeUp_Array = new Transform[levelLength];
 	
 		for(int i = 0; i < pipeUp_Array.Length; i++){
@@ -71,7 +74,7 @@ public class PipeGenerator : MonoBehaviour {
 
 			//SpawnEnemy (pipePositionUp, i, true);
 		}
-	}
+	}*/
 
 	void FixedUpdate(){
 		if (timer <= 0 && Player.instance.playerDied == false) {
@@ -83,7 +86,7 @@ public class PipeGenerator : MonoBehaviour {
 	void SpawnEnemy(bool gameStarted){
 		if(Random.Range (0f, 1f) < chanceForEnemyExistence){
 			if (gameStarted) {
-				Vector3 pipePosition = new Vector3 (17.5f, -2.6f, 99f);
+				Vector3 pipePosition = new Vector3 (17.5f, Random.Range (minY, maxY), 99f);
 	
 				int index = Random.Range (0, enemy.Length);
 				Transform createEnemy = (Transform)Instantiate (enemy [index], pipePosition, Quaternion.Euler (180f, 0f, 180f));

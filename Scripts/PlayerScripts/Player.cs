@@ -32,8 +32,6 @@ public class Player : MonoBehaviour {
 	private BGScroller bgScoller;
 	private GroundScroller groundScroller;
 
-	public float timeLeft = 10f;
-
 	[SerializeField]
 	private GameObject playerBullet;
 
@@ -83,7 +81,7 @@ public class Player : MonoBehaviour {
 			Vector3 startPos1 = new Vector3 (-6f, -2.73f, 10f);
 			transform.position = startPos1;
 		} else {
-			Vector3 startPos1 = new Vector3(-5.5f, -2.73f, 10f);
+			Vector3 startPos1 = new Vector3(-4.2f, -2.73f, 10f);
 			transform.position = startPos1;
 		}
 	}
@@ -101,16 +99,6 @@ public class Player : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		/*if (playerJumped == true) {
-			myAnimator.SetBool ("jump", true);
-			transform.Translate (Vector3.up * Time.deltaTime * jumpPower, Space.World);
-			Vector3 clampedPos = transform.position;
-			clampedPos.y = Mathf.Clamp (clampedPos.y, minY, maxY);
-			transform.position = clampedPos;
-			AudioSource.PlayClipAtPoint (buttonSound, transform.position, 1f);
-		} else{
-			myAnimator.SetBool ("jump", false);
-		}*/
 	}
 
 	public void ButtonDown(BaseEventData e){
@@ -121,40 +109,28 @@ public class Player : MonoBehaviour {
 		playerJumped = false;
 	}
 
-	public void PlayerShoot(){
-		canShoot = true;
-		if (canShoot == true) {
-			//myAnimator.SetBool ("shoot", true);
-			//myAnimator.SetFloat ("speed", 1f);
-
-			//StartCoroutine (PlayerShootBullet (0.1f));
-		}
-
-		/*if (canShoot == true) {
+	public void PlayerShoot(BaseEventData e){
+		if (gameStarted) {
 			myAnimator.SetBool ("shoot", true);
 			StartCoroutine (PlayerShootBullet (0.1f));
-		}*/
+		}
 	}
 
-	public void PlayerNotShooting(){
-		canShoot = false;
-		//myAnimator.SetBool ("shoot", false);
+	public void PlayerNotShooting(BaseEventData e){
+		myAnimator.SetBool ("shoot", false);
 	}
 
 	void FixedUpdate(){
 		if (gameStarted && playerDied == false) {
 			myAnimator.SetFloat ("speed", 1f);
 			PlayerGrounded ();
-
-			#if !UNITY_ANDROID
-			PlayerJump ();
-			#endif
 		}
 
 		if (playerJumped == true) {
-			if (gameStarted) {
+			if (gameStarted && isGrounded) {
 				myAnimator.SetBool ("jump", true);
-				transform.Translate (Vector3.up * Time.deltaTime * jumpPower, Space.World);
+				//transform.Translate (Vector3.up * Time.deltaTime * jumpPower, Space.World);
+				myRigidbody.velocity = new Vector3(0f, Time.deltaTime * jumpPower, 0f);
 				Vector3 clampedPos = transform.position;
 				clampedPos.y = Mathf.Clamp (clampedPos.y, minY, maxY);
 				transform.position = clampedPos;
@@ -163,48 +139,14 @@ public class Player : MonoBehaviour {
 		} else{
 			myAnimator.SetBool ("jump", false);
 		}
-
-		if (canShoot == true) {
-			if (gameStarted) {
-				myAnimator.SetBool ("shoot", true);
-				StartCoroutine (PlayerShootBullet (0.1f));
-			}
-		} else {
-			myAnimator.SetBool ("shoot", false);
-		}
-	}
-
-	public void PlayerJump(){
-		if (Input.GetKeyDown (KeyCode.Space) && !isGrounded && canDoubleJump) {
-			canDoubleJump = false;
-			myAnimator.SetBool ("jump", true);
-			myAnimator.SetFloat ("speed", 0f);
-
-			myRigidbody.velocity = new Vector2(0f, secondJumpPower * Time.deltaTime);
-
-			AudioSource.PlayClipAtPoint(buttonSound, transform.position, 3f);
-
-		} else if (Input.GetKeyUp (KeyCode.Space) && isGrounded) {
-			myAnimator.SetBool ("jump", true);
-			myAnimator.SetFloat ("speed", 0f);
-
-			myRigidbody.velocity = new Vector2(0f, jumpPower * Time.deltaTime);
-			playerJumped = true;
-			canDoubleJump = true;
-			AudioSource.PlayClipAtPoint(buttonSound, transform.position, 3f);
-		} else {
-			myAnimator.SetFloat ("speed", 1f);
-			myAnimator.SetBool ("jump", false);
-		}
 	}
 
 	IEnumerator PlayerShootBullet(float shootTime){
 		yield return new WaitForSeconds (shootTime);
 
-		//Vector3 offset = new Vector3(-5.64f, transform.position.y+(-0.5f), 10f);
 		Vector3 offset = new Vector3(transform.position.x, transform.position.y+(-0.5f), 10f);
 		GameObject newBullet = Instantiate (playerBullet, offset, Quaternion.identity) as GameObject;
-		newBullet.GetComponent<Rigidbody2D> ().velocity = new Vector2(bulletForce * Time.deltaTime, 0f);
+		newBullet.GetComponent<Rigidbody2D> ().velocity = new Vector2(bulletForce, 0f);
 
 		AudioSource.PlayClipAtPoint (bulletSound, transform.position, 3f);
 
@@ -216,9 +158,6 @@ public class Player : MonoBehaviour {
 		gameStarted = true;
 		bgScoller.canScroll = true;
 		groundScroller.groundScroll = true;
-		//canShoot = true;	
-		//playerJumped = true;
-		//Enemy.instance.canFlap = true;	
 		Pipedestroyer.instance.canRespawn = true;
 	}
 
@@ -233,7 +172,6 @@ public class Player : MonoBehaviour {
 
 		myAnimator.SetFloat ("speed", 0f);
 		myAnimator.SetBool ("jump", false);
-		//playerJumped = false;
 
 		bgScoller.offsetSpeed = 0f;
 		groundScroller.groundSpeed = 0f;

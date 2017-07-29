@@ -11,8 +11,9 @@ public class Score : MonoBehaviour {
 	public static int score = 0, highScore = 0;
 	[HideInInspector]
 	public static Text scoreText, highScoreText;
-	[HideInInspector]
-	public Text highScoreText2, scoreText2;
+
+	//[HideInInspector]
+	//public Text highScoreText2, scoreText2;
 
 	// Use this for initialization
 	void Start () {
@@ -39,7 +40,6 @@ public class Score : MonoBehaviour {
 		score++;
 
 		scoreText.text = "Score: " + score.ToString ();
-		//highScoreText.text = "High Score: " + highScore.ToString ();
 
 		if (score > highScore) {
 			highScore = score;

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Enemy: MonoBehaviour {
 
@@ -38,34 +39,10 @@ public class Enemy: MonoBehaviour {
 	}
 
 	void FixedUpdate () {
-		if(Player.instance.playerDied == false){
-			StartCoroutine (Rise());
-		}
-
 		if (canFlap && Player.instance.playerDied == false) {
 			myAnimator.SetTrigger ("flying");
 		} else {
 			myAnimator.ResetTrigger ("flying");
-		}
-	}
-
-	IEnumerator Rise(){
-		enemyTransform.Translate (Vector2.up * verticalSpeed * Time.deltaTime);
-		yield return new WaitForEndOfFrame ();
-
-		if(enemyTransform.position.y >= 3f){
-			StartCoroutine (Fall ());
-		}
-
-	}
-
-	IEnumerator Fall(){
-		yield return new WaitForSeconds (1f);
-
-		enemyTransform.Translate (Vector2.down * fallSpeed);
-
-		if(enemyTransform.position.y == -2.5f && enemyTransform.position.y < 0f){
-			StartCoroutine (Rise());
 		}
 	}
 
@@ -81,9 +58,14 @@ public class Enemy: MonoBehaviour {
 		if(col.tag == Tags.PLAYER_BULLET_TAG){
 			Vector3 effectPos = transform.position;
 			effectPos.y += 0f;
-			Instantiate(enemyDiedEffect, effectPos, Quaternion.identity);
+			GameObject effect = Instantiate(enemyDiedEffect, effectPos, Quaternion.identity) as GameObject;
 			Destroy (gameObject);
 			Destroy (col.gameObject);
+
+			Destroy (effect, 1.0f);
+
+			GameplayController.instance.KillEnemy ();
+
 		}
 
 		if(col.tag == Tags.PLAYER_TAG){

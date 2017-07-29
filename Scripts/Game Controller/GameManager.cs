@@ -13,7 +13,10 @@ public class GameManager : MonoBehaviour {
 	public float lives;
 
 	[HideInInspector]
-	public float power;
+	public float score;
+
+	[HideInInspector]
+	public int points;
 
 
 	// Use this for initialization

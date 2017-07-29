@@ -14,30 +14,40 @@ public class GameplayController : MonoBehaviour {
 	public float score, lives;
 	private Player player;
 	private Score scoreScript;
-	private Text scoreText2, highScoreText2;
+	private Text scoreText2, highScoreText2, pointsText2;
+
+	public int points;
+	[HideInInspector]
+	public Text pointsText;
+	private int highPoint = 0;
 
 	private GameObject pausePanel;
+
+	private Text playerScoreText;
 
 
 	void Awake () {
 		MakeInstance ();
 
 		lives = 3;
+		points = 0;
 		liveText = GameObject.Find (Tags.LIVES_TEXT).GetComponent<Text> ();
 		player = GameObject.Find (Tags.PLAYER_TAG).GetComponent<Player> ();
+		pointsText = GameObject.Find (Tags.POINTS_TEXT).GetComponent<Text> ();
 
 		highScoreText2 = GameObject.Find (Tags.HIGH_SCORE_TEXT2).GetComponent<Text> ();
 		scoreText2 = GameObject.Find (Tags.SCORE_TEXT2).GetComponent<Text> ();
+		pointsText2 = GameObject.Find (Tags.POINTS_TEXT2).GetComponent<Text> ();
 
 		//pausePanel = GameObject.Find (Tags.PAUSE_PANEL);
 		pausePanel = GameObject.FindGameObjectWithTag (Tags.PAUSE_PANEL);
 		pausePanel.SetActive (false);
 
-
+		playerScoreText = GameObject.Find (Tags.SCORE_TEXT).GetComponent<Text> ();
 	}
 
 	void Start(){
-		//pausePanel.SetActive (false);
+		highPoint = PlayerPrefs.GetInt ("highPoint");
 	}
 
 	void OnEnable(){
@@ -47,6 +57,10 @@ public class GameplayController : MonoBehaviour {
 	void OnDisable(){
 		SceneManager.sceneLoaded -= OnSceneWasLoaded;
 		instance = null;
+	}
+
+	void OnDestroy(){
+		PlayerPrefs.SetInt ("highPoint", highPoint);
 	}
 
 	void MakeInstance(){
@@ -64,9 +78,13 @@ public class GameplayController : MonoBehaviour {
 			}else if(GameManager.instance.gameRestarted){
 				GameManager.instance.gameRestarted = false;
 				lives = GameManager.instance.lives;
+				points = GameManager.instance.points;
+				score = GameManager.instance.score;
 			}
 
 			liveText.text = "Lives: " + lives.ToString ();
+			pointsText.text = "Points: " + points.ToString ();
+			playerScoreText.text = "Score: " + Score.score.ToString ();
 		}
 	}
 
@@ -77,13 +95,21 @@ public class GameplayController : MonoBehaviour {
 			//health--;
 			StartCoroutine (PlayerDied (Tags.GAMEPLAY_SCENE));
 			liveText.text = "Lives: " + lives.ToString ();
+			pointsText.text = "Points: " + points.ToString ();
+			Score.scoreText.text = "Score: " + Score.score.ToString ();
 		} else {
 			StartCoroutine (WaitBeforeReplay ());
 		}
 	}
 
+	public void KillEnemy(){
+		points++;
+		pointsText.text = "Points: " + points.ToString ();
+	}
+
 	public IEnumerator PlayerDied(string sceneName){
 		GameManager.instance.lives = lives;
+		GameManager.instance.points = points;
 		GameManager.instance.gameRestarted = true;
 
 		yield return new WaitForSecondsRealtime (3f);
@@ -98,12 +124,19 @@ public class GameplayController : MonoBehaviour {
 		scoreText2.text = "Score: " + Score.score.ToString ();
 		highScoreText2.text = "High Score: " + Score.highScore.ToString ();
 
+		if (points > highPoint) {
+			highPoint = points;
+		}
+
+		pointsText2.text = "Points: " + highPoint.ToString ();
+
 	}
 
 	public void PlayAgain(){
 		Time.timeScale = 1f;
 		SceneManager.LoadScene (Tags.GAMEPLAY_SCENE);
 		Score.score = 0;
+		points = 0;
 	}
 
 	public void PauseGame(){
